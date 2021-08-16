@@ -15,7 +15,7 @@ def extract_indeed_pages():
     next_button = soup.find("a", {"aria-label": "Next"})
 
     while next_button:
-        URL_updated = f"https://kr.indeed.com/jobs?q=python&limit=50&start={str(start)}"
+        URL_updated = f"https://www.indeed.com/jobs?q=software%20engineer%20intern&limit=50&start={str(start)}"
         result_updated = requests.get(URL_updated)
         soup_updated = BeautifulSoup(result_updated.text, 'html.parser')
         next_button = soup_updated.find("a", {"aria-label": "Next"})
@@ -29,6 +29,13 @@ def extract_indeed_pages():
 
 
 def extract_indeed_jobs(last_page):
+    jobs = []
     for page in range(last_page):
         result = requests.get(f"{URL}&start={page * LIMIT}")
-        print(result.status_code)
+        soup = BeautifulSoup(result.text, 'html.parser')
+        results = soup.find_all("a", {"class": "tapItem"})
+
+        for result in results:
+            title = result.find("h2", {"class": "jobTitle"}).find("span", title=True).string
+            print(title)
+    return jobs
